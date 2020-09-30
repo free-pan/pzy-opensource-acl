@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.pzy.opensource.acl.i18n.dao.I18nResourceCodeDAO">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.pzy.opensource.acl.i18n.entity.I18nResourceCode">
+    <result column="id" property="id" />
+    <result column="creator_id" property="creatorId" />
+    <result column="create_time" property="createTime" />
+    <result column="editor_id" property="editorId" />
+    <result column="edit_time" property="editTime" />
+    <result column="creator_name" property="creatorName" />
+    <result column="editor_name" property="editorName" />
+        <result column="code" property="code" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        creator_id,
+        create_time,
+        editor_id,
+        edit_time,
+        creator_name,
+        editor_name,
+        code
+    </sql>
+
+    <select id="findByLocaleAndCode" parameterType="org.pzy.opensource.i18n.domain.bo.LocaleAndCodeBO" resultType="org.pzy.opensource.i18n.domain.vo.I18nMessageDataVO">
+        select
+            lan.code as locale, resCode.code as code, resValue.resource_text as txt
+        from
+            sys_i18n_language lan inner join sys_i18n_resource_value resValue on lan.id=resValue.language_id
+            inner join sys_i18n_resource_code resCode on resValue.resource_id=resCode.id
+        where
+            lan.code=#{locale}
+            and
+            resCode.code=#{code}
+            and
+            lan.invalid=1
+    </select>
+</mapper>

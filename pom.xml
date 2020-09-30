@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.pzy.opensource</groupId>
+    <artifactId>pzy-opensource-acl</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>pzy-opensource-acl-service</module>
+        <module>pzy-opensource-acl-rest</module>
+    </modules>
+
+    <properties>
+        <pzy-opensource.version>1.0.2</pzy-opensource.version>
+        <mysql.version>8.0.21</mysql.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+        <lombok.version>1.18.10</lombok.version>
+        <mapstruct.version>1.3.0.Final</mapstruct.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.pzy.opensource</groupId>
+                <artifactId>pzy-redis-starter</artifactId>
+                <version>${pzy-opensource.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.pzy.opensource</groupId>
+                <artifactId>pzy-mybatis-plus-starter</artifactId>
+                <version>${pzy-opensource.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.pzy.opensource</groupId>
+                <artifactId>pzy-swagger-ui</artifactId>
+                <version>${pzy-opensource.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.pzy.opensource</groupId>
+                <artifactId>pzy-springboot-dynamic-i18n-starter</artifactId>
+                <version>${pzy-opensource.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.pzy.opensource</groupId>
+                <artifactId>pzy-pic-verify-code-starter</artifactId>
+                <version>${pzy-opensource.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.pzy.opensource</groupId>
+                <artifactId>pzy-session-starter</artifactId>
+                <version>${pzy-opensource.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.pzy.opensource</groupId>
+                <artifactId>pzy-springboot-web-starter</artifactId>
+                <version>${pzy-opensource.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.pzy.opensource</groupId>
+                <artifactId>pzy-springboot-web-security-starter</artifactId>
+                <version>${pzy-opensource.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.pzy.opensource</groupId>
+                <artifactId>pzy-code-generator</artifactId>
+                <version>${pzy-opensource.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.pzy.opensource</groupId>
+                <artifactId>pzy-test-springboot</artifactId>
+                <version>${pzy-opensource.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- Compiler 插件, 设定 JDK 版本 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <skip>true</skip>
+                        <showWarnings>true</showWarnings>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                                <version>${mapstruct.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                    </configuration>
+                </plugin>
+
+                <!-- 跳过测试 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.22.2</version>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+
+                <!--配置生成Javadoc包-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <configuration>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <charset>${project.build.sourceEncoding}</charset>
+                        <docencoding>${project.build.sourceEncoding}</docencoding>
+                        <tags>
+                            <tag>
+                                <name>date</name>
+                            </tag>
+                            <tag>
+                                <name>todo</name>
+                                <placement>a</placement>
+                                <head>待办:</head>
+                            </tag>
+                        </tags>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!--配置生成源码包-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- 打包 jar 文件时，配置 manifest 文件，加入 lib 包的 jar 依赖 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <configuration>
+                        <archive>
+                            <addMavenDescriptor>false</addMavenDescriptor>
+                        </archive>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <configuration>
+                                <archive>
+                                    <manifest>
+                                        <!-- Add directory entries -->
+                                        <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                        <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                        <addClasspath>true</addClasspath>
+                                    </manifest>
+                                </archive>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- resource -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+
+                <!-- install -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.5.2</version>
+                </plugin>
+
+                <!-- clean -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+
+                <!-- ant -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+
+                <!-- dependency -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.1.2</version>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>

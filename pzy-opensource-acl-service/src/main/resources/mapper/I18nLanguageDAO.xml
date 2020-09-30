@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.pzy.opensource.acl.i18n.dao.I18nLanguageDAO">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.pzy.opensource.acl.i18n.entity.I18nLanguage">
+    <result column="id" property="id" />
+    <result column="creator_id" property="creatorId" />
+    <result column="create_time" property="createTime" />
+    <result column="editor_id" property="editorId" />
+    <result column="edit_time" property="editTime" />
+    <result column="invalid" property="invalid" />
+    <result column="invalid_operator_id" property="invalidOperatorId" />
+    <result column="invalid_time" property="invalidTime" />
+    <result column="invalid_name" property="invalidName" />
+    <result column="creator_name" property="creatorName" />
+    <result column="editor_name" property="editorName" />
+        <result column="code" property="code" />
+        <result column="name" property="name" />
+        <result column="display_priority" property="displayPriority" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        creator_id,
+        create_time,
+        editor_id,
+        edit_time,
+        invalid,
+        invalid_operator_id,
+        invalid_time,
+        invalid_name,
+        creator_name,
+        editor_name,
+        code, name, display_priority
+    </sql>
+
+</mapper>

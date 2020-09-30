@@ -1,0 +1,175 @@
+import React, { memo, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'dva';
+
+import styles from './I18nLanguageMgr.less';
+import PageTitle from '@/components/PageTitle';
+import { PageContainer } from '@ant-design/pro-layout';
+import { Card, Row, Col, Button, Input, Form, Table } from 'antd';
+import { useTranslation } from 'react-i18next';
+import SearchCardExtra from '@/components/SearchCardExtra';
+import { exitFullScreen, fullScreen } from '@/utils/FullScreenUtil';
+import { useRequest } from '@umijs/hooks';
+import I18nMgrService from '@/pages/I18nMgr/I18nMgrService';
+import AntdUtil from '@/utils/AntdUtil';
+import { useSessionStorageState } from '@umijs/hooks';
+import AntdV4DynamicIcon from '@/components/AntdV4DynamicIcon';
+
+interface RouteProps {
+  /**
+   * 当前路由的路径
+   */
+  path: string;
+  /**
+   * 路由路径是否需要完全匹配
+   */
+  exact: boolean;
+}
+
+interface i18nLanguageMgrProps {
+  route?: RouteProps;
+}
+
+const i18nLanguageMgr: React.FC<i18nLanguageMgrProps> = (props) => {
+  const { loading, run, data = { resp: { list: [] } } } = useRequest(
+    I18nMgrService.searchLanguage,
+    {
+      manual: true,
+      refreshOnWindowFocus: true,
+      debounceInterval: 500,
+      loadingDelay: 200,
+    },
+  );
+  const { t } = useTranslation();
+  const [form] = Form.useForm();
+  const [formData, setFormData] = useSessionStorageState<object>(
+    'languageMgr',
+    { keyword: '' },
+  );
+  const { antdColumnMap, columnList } = AntdUtil.columnDefineConvert([
+    {
+      title: () => t('ui_comm_name'),
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: t('ui:comm:code'),
+      dataIndex: 'code',
+      key: 'code',
+    },
+    {
+      title: t('ui:comm:edit'),
+      dataIndex: 'editTime',
+      key: 'editTime',
+    },
+    {
+      title: t('ui:comm:editor'),
+      dataIndex: 'editorName',
+      key: 'editorName',
+    },
+  ]);
+  const [realAntdColumnArr, setRealAntdColumnArr] = useState<Array<object>>(
+    AntdUtil.antdColumnSortByColumnInfo(antdColumnMap, columnList),
+  );
+  const [tableSize, setTableSize] = useState<string>('default');
+  const dispatch = useDispatch();
+
+  // @ts-ignore
+  const loadingEffect = useSelector((state) => state.loading);
+  //const loading = loadingEffect.effects['user/fetchUser'];
+  // @ts-ignore
+  //const user = useSelector(state=>state.user.userInfo)
+
+  // 仅在组件第一次初始化时调用
+  useEffect(() => {
+    run({ kw: '' });
+  }, []);
+
+  const onFullScreenChange = (isFullScreen: boolean) => {
+    const dom = document.getElementById('table-panel');
+    if (isFullScreen) {
+      fullScreen(dom);
+    } else {
+      exitFullScreen();
+    }
+  };
+
+  const onFinish = (values) => {
+    setFormData(values);
+    run({ kw: values.keyword });
+  };
+  return (
+    <PageContainer title={<PageTitle />} breadcrumb={{}}>
+      <PageTitle pureText={false} />
+      <div id={'table-panel'}>
+        <Card>
+          <Form
+            form={form}
+            initialValues={formData}
+            className={'winter-search-form-simple'}
+            onFinish={onFinish}
+          >
+            <Row>
+              <Col span={16}>
+                <Form.Item
+                  label={t('i18n:language:codeOrName')}
+                  name="keyword"
+                  labelCol={{ span: 4 }}
+                  wrapperCol={{ span: 20 }}
+                >
+                  <Input placeholder={t('ui:comm:pleaseInput')} />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item>
+                  <Button className={'ML10'}>{t('ui:comm:reset')}</Button>
+                  <Button
+                    htmlType={'submit'}
+                    type={'primary'}
+                    className={'ML10'}
+                    loading={loading}
+                  >
+                    {t('ui_comm_search')}
+                  </Button>
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+        </Card>
+        <Card
+          className={'MT15'}
+          title={<PageTitle />}
+          extra={
+            <SearchCardExtra
+              columnList={columnList}
+              onViewColumnChange={(columnNameList) => {
+                setRealAntdColumnArr(
+                  AntdUtil.antdColumnSortByColumnName(
+                    antdColumnMap,
+                    columnNameList,
+                  ),
+                );
+              }}
+              onFullScreenChange={onFullScreenChange}
+              onReload={() => {
+                run({ kw: '', pg: { size: 10, page: 1 } });
+              }}
+              onDensity={(density) => {
+                setTableSize(density);
+              }}
+            />
+          }
+        >
+          <AntdV4DynamicIcon iconType={'StepBackwardOutlined'} />
+          <Table
+            size={tableSize}
+            columns={realAntdColumnArr}
+            dataSource={data.resp.list}
+            rowKey={(record) => record.id}
+            loading={loading}
+          />
+        </Card>
+      </div>
+    </PageContainer>
+  );
+};
+export default memo(i18nLanguageMgr);
