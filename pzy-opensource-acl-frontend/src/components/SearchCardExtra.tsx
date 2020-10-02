@@ -38,27 +38,27 @@ interface SearchCardExtraProps {
   /**
    * 新建按钮标题. 默认:新建
    */
-  newBtnTitle?: string;
+  newBtnTitle?: string | Function;
   /**
    * 列设置按钮标题.默认:列设置
    */
-  columnSettingsBtnTitle?: string;
+  columnSettingsBtnTitle?: string | Function;
   /**
    * 刷新按钮标题.默认:刷新
    */
-  reloadBtnTitle?: string;
+  reloadBtnTitle?: string | Function;
   /**
    * 密度按钮标题.默认:密度
    */
-  densityBtnTitle?: string;
+  densityBtnTitle?: string | Function;
   /**
    * 全屏按钮标题.默认:全屏
    */
-  fullscreenBtnTitle?: string;
+  fullscreenBtnTitle?: string | Function;
   /**
    * 取消全屏按钮标题.默认:取消全屏
    */
-  cancelFullscreenBtnTitle?: string;
+  cancelFullscreenBtnTitle?: string | Function;
   route?: RouteProps;
   /**
    * 新增按钮点击时回调
@@ -114,6 +114,12 @@ const SearchCardExtra: React.FC<SearchCardExtraProps> = (props) => {
     fullscreenBtnTitle = '全屏',
     cancelFullscreenBtnTitle = '取消全屏',
   } = props;
+  const newBtnTitleStr = typeof (newBtnTitle) === 'string' ? newBtnTitle : newBtnTitle();
+  const columnSettingsBtnTitleStr = typeof (columnSettingsBtnTitle) === 'string' ? columnSettingsBtnTitle : columnSettingsBtnTitle();
+  const reloadBtnTitleStr = typeof (reloadBtnTitle) === 'string' ? reloadBtnTitle : reloadBtnTitle();
+  const densityBtnTitleStr = typeof (densityBtnTitle) === 'string' ? densityBtnTitle : densityBtnTitle();
+  const fullscreenBtnTitleStr = typeof (fullscreenBtnTitle) === 'string' ? fullscreenBtnTitle : fullscreenBtnTitle();
+  const cancelFullscreenBtnTitleStr = typeof (cancelFullscreenBtnTitle) === 'string' ? cancelFullscreenBtnTitle : cancelFullscreenBtnTitle();
   const columnSettingsItemArr: Array<CheckboxOptionType | string> = [];
   const tmpArr: Array<CheckboxValueType> = [];
   columnList.forEach((item) => {
@@ -123,12 +129,8 @@ const SearchCardExtra: React.FC<SearchCardExtraProps> = (props) => {
     });
     tmpArr.push(item.name);
   });
-  const [columnSettings, setColumnSettings] = useState<
-    Array<CheckboxValueType>
-  >(tmpArr);
-  const [columnSettingsCheckedAll, setColumnSettingsCheckedAll] = useState<
-    boolean
-  >(true);
+  const [columnSettings, setColumnSettings] = useState<Array<CheckboxValueType>>(tmpArr);
+  const [columnSettingsCheckedAll, setColumnSettingsCheckedAll] = useState<boolean>(true);
   const [indeterminate, setIndeterminate] = useState<boolean>(false);
   const [fullScreen, setFullScreen] = useState<boolean>(false);
 
@@ -158,7 +160,7 @@ const SearchCardExtra: React.FC<SearchCardExtraProps> = (props) => {
       onChange={(e) => {
         setColumnSettingsCheckedAll(e.target.checked);
         setIndeterminate(false);
-        let arr = [];
+        let arr: Array<CheckboxValueType> = [];
         if (e.target.checked) {
           arr = selectAll(columnList);
         }
@@ -167,7 +169,7 @@ const SearchCardExtra: React.FC<SearchCardExtraProps> = (props) => {
       }}
       checked={columnSettingsCheckedAll}
     >
-      {columnSettingsBtnTitle}
+      {columnSettingsBtnTitleStr}
     </Checkbox>
   );
   const menu = (
@@ -184,23 +186,23 @@ const SearchCardExtra: React.FC<SearchCardExtraProps> = (props) => {
     </Menu>
   );
 
-  const getPopupContainer = () =>
-    document.getElementById('winterSearchPanelExtra');
+  // @ts-ignore
+  const getPopupContainer = (triggerNode: HTMLElement): HTMLElement => document.getElementById('winterSearchPanelExtra');
   return (
     <div className={'searchPanelExtra'} id={'winterSearchPanelExtra'}>
-      <Button type={'primary'}>{newBtnTitle}</Button>
+      <Button type={'primary'}>{newBtnTitleStr}</Button>
       <Tooltip
         placement="top"
-        title={reloadBtnTitle}
+        title={reloadBtnTitleStr}
         getPopupContainer={getPopupContainer}
       >
         <a onClick={() => onReload()}>
-          <ReloadOutlined />
+          <ReloadOutlined/>
         </a>
       </Tooltip>
       <Tooltip
         placement="top"
-        title={densityBtnTitle}
+        title={densityBtnTitleStr}
         getPopupContainer={getPopupContainer}
       >
         <Dropdown
@@ -209,13 +211,13 @@ const SearchCardExtra: React.FC<SearchCardExtraProps> = (props) => {
           getPopupContainer={getPopupContainer}
         >
           <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
-            <ColumnHeightOutlined />
+            <ColumnHeightOutlined/>
           </a>
         </Dropdown>
       </Tooltip>
       <Tooltip
         placement="top"
-        title={columnSettingsBtnTitle}
+        title={columnSettingsBtnTitleStr}
         getPopupContainer={getPopupContainer}
       >
         <Popover
@@ -226,13 +228,13 @@ const SearchCardExtra: React.FC<SearchCardExtraProps> = (props) => {
           getPopupContainer={getPopupContainer}
         >
           <a>
-            <SettingOutlined />
+            <SettingOutlined/>
           </a>
         </Popover>
       </Tooltip>
       <Tooltip
         placement="top"
-        title={fullScreen ? cancelFullscreenBtnTitle : fullscreenBtnTitle}
+        title={fullScreen ? cancelFullscreenBtnTitleStr : fullscreenBtnTitleStr}
         getPopupContainer={getPopupContainer}
       >
         <a
@@ -242,7 +244,7 @@ const SearchCardExtra: React.FC<SearchCardExtraProps> = (props) => {
             onFullScreenChange(tmp);
           }}
         >
-          {fullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
+          {fullScreen ? <FullscreenExitOutlined/> : <FullscreenOutlined/>}
         </a>
       </Tooltip>
     </div>

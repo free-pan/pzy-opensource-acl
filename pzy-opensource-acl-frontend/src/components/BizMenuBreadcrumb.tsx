@@ -37,9 +37,7 @@ const BizMenuBreadcrumb: React.FC<BizMenuBreadcrumbProps> = (props) => {
   const { show = true, i18n = true, homeMenu, pathname } = props;
 
   // @ts-ignore
-  const breadcrumbItemArr = useSelector(
-    (state) => state.GlobalModel.breadcrumbItemArr,
-  );
+  const breadcrumbItemArr = useSelector((state) => state.GlobalModel.breadcrumbItemArr);
 
   return (
     <>
