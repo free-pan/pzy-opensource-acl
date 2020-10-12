@@ -86,3 +86,7 @@ component:
       - "org.pzy.opensource.acl.i18n.controller"
   cache: # 缓存详细配置
     cache-key-namespace: winter-cache # 缓存统一前缀
+
+server:
+  error:
+    include-exceptionr: false

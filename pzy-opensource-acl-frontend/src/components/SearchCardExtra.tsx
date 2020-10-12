@@ -67,7 +67,7 @@ interface SearchCardExtraProps {
   /**
    * 密度改变回调
    */
-  onDensity: Function;
+  onDensity: (density: string) => void;
   /**
    * 重新加载回调
    */
@@ -87,7 +87,7 @@ interface SearchCardExtraProps {
   /**
    * 选中所有列或取消所有列时触发
    */
-  onViewColumnChange: Function;
+  onViewColumnChange: (checkedValue: Array<CheckboxValueType>) => void;
 }
 
 const selectAll = (
@@ -104,6 +104,7 @@ const SearchCardExtra: React.FC<SearchCardExtraProps> = (props) => {
   const {
     columnList,
     onReload,
+    onNew,
     onFullScreenChange,
     onViewColumnChange,
     onDensity,
@@ -190,7 +191,7 @@ const SearchCardExtra: React.FC<SearchCardExtraProps> = (props) => {
   const getPopupContainer = (triggerNode: HTMLElement): HTMLElement => document.getElementById('winterSearchPanelExtra');
   return (
     <div className={'searchPanelExtra'} id={'winterSearchPanelExtra'}>
-      <Button type={'primary'}>{newBtnTitleStr}</Button>
+      <Button type={'primary'} onClick={() => onNew()}>{newBtnTitleStr}</Button>
       <Tooltip
         placement="top"
         title={reloadBtnTitleStr}

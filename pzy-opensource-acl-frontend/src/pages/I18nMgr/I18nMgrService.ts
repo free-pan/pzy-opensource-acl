@@ -5,6 +5,7 @@ import { BACKEND_WEB_API_BASE_URL } from '@/services/BackendApiUtil';
 const I18N_WEB_API_BASE_URL = BACKEND_WEB_API_BASE_URL + '/i18n';
 
 const searchLanguageUrl = I18N_WEB_API_BASE_URL + '/language';
+const addLanguageUrl = I18N_WEB_API_BASE_URL + '/language';
 
 export default {
   /**
@@ -19,11 +20,18 @@ export default {
     kw: string;
     pg?: BackendPageDataStruct;
   }) {
-    console.log('kw', kw);
+    console.log('searchLanguage kw', kw);
     return AjaxUtil.get(searchLanguageUrl, {
       kw: kw,
       'pg.page': pg.page,
       'pg.size': pg.size,
     });
   },
+  /**
+   * 添加语言
+   * @param obj
+   */
+  addLanguage:function(obj:any){
+    return AjaxUtil.bodyPost(addLanguageUrl, obj);
+  }
 };

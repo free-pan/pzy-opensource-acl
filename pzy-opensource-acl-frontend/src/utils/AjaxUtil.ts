@@ -1,5 +1,6 @@
-import { extend } from 'umi-request';
+import { extend, ResponseError } from 'umi-request';
 import qs from 'qs';
+import AntdUtil from '@/utils/AntdUtil';
 
 /**
  * 默认超时时间10秒
@@ -8,7 +9,10 @@ import qs from 'qs';
 const defaultTimeout = 10;
 
 // @ts-ignore
-const errorHandler = function (error) {
+const defaultErrorHandler = function(error) {
+  console.log('error', error.request);
+  const { url, options } = error.request;
+  const { method } = options;
   const { response = {}, message = '', data = {} } = error;
   console.log('error response', response);
   console.log('error message', message);
@@ -19,23 +23,51 @@ const errorHandler = function (error) {
     console.log(error.response.headers);
     console.log(error.data);
     console.log(error.request);
-    let dataStr = '';
-    if (error.data) {
-      if (typeof error.data === 'object') {
-        dataStr = JSON.stringify(data);
-      } else {
-        dataStr = error.data;
+    switch (error.response.status) {
+      case 400: {
+        // 业务逻辑验证未通过,使用警告弹窗
+        AntdUtil.errorArr(error.data.msgList);
+        break;
+      }
+      case 403: {
+        // 操作权限或数据权限不足,使用警告弹窗
+        message.error('权限不足,操作无法继续!');
+        break;
+      }
+      case 404: {
+        // 资源或数据不存在,使用错误弹窗
+        message.error('资源或数据不存在!');
+        break;
+      }
+      case 408: {
+        // 请求超时,使用警告notify
+        AntdUtil.antdNotifyArray('warning', method, url, '请求超时', ['网络或后端服务超时!'], null);
+        break;
+      }
+      case 405: {
+        // 客户端请求方式错误,使用错误notify
+      }
+      case 406: {
+        // 客户端请求参数格式错误,使用错误notify
+      }
+      case 500: {
+        // 服务端非预期异常,使用错误notify
+        AntdUtil.antdNotifyArray('error', method, url, '后端服务异常', error.data.msgList, null);
+        break;
+      }
+      case 503: {
+        // 服务端停机或过载,使用错误notify
+        AntdUtil.antdNotifyArray('error', method, url, '后端服务异常', ['服务停机或过载!'], null);
+        break;
+      }
+      case 401: {
+        // 未登录,转入登录界面
+        break;
       }
     }
-    return {
-      response: {
-        status: error.response.status,
-        error: dataStr ? dataStr : error.statusText,
-      },
-    };
   } else {
-    // 请求初始化时出错或者没有响应返回的异常
-    console.log(error.message);
+    // 请求初始化时出错或者没有响应返回的处理方式
+    AntdUtil.antdNoneResponseNotify('error', method, url, 'web请求无响应', message, null);
   }
 
   throw error; // 如果throw. 错误将继续抛出.
@@ -46,13 +78,37 @@ const errorHandler = function (error) {
 
 const extendRequest = extend({
   timeout: defaultTimeout * 1000,
-  errorHandler,
+  errorHandler: defaultErrorHandler,
   getResponse: true,
   credentials: 'include',
-  paramsSerializer: function (params) {
+  paramsSerializer: function(params) {
     return qs.stringify(params, { indices: true, allowDots: true });
   },
 });
+
+export interface UmiRequestConfig {
+  /**
+   * 是否使用缓存. 默认:false
+   */
+  useCache: boolean;
+  /**
+   * 超时时间.单位:秒
+   */
+  timeout: number;
+  /**
+   * 额外的请求头
+   */
+  headers: HeadersInit;
+  /**
+   * 是否包含响应头信息. 默认:false
+   */
+  getResponse: boolean;
+  /**
+   * 自定义异常处理回调方法.可选
+   */
+  errorHandler: (error: ResponseError) => void
+}
+
 export default {
   /**
    * 普通的form表单提交方式
@@ -72,6 +128,7 @@ export default {
       timeout = defaultTimeout,
       headers = {},
       getResponse = false,
+      errorHandler = defaultErrorHandler,
     } = {},
   ) {
     return extendRequest.post(url, {
@@ -81,6 +138,7 @@ export default {
       useCache,
       requestType: 'form',
       getResponse,
+      errorHandler,
     });
   },
 
@@ -100,7 +158,8 @@ export default {
       useCache = false,
       timeout = defaultTimeout,
       headers = {},
-      getResponse = false,
+      getResponse = true,
+      errorHandler = defaultErrorHandler,
     } = {},
   ) {
     return extendRequest.post(url, {
@@ -110,6 +169,7 @@ export default {
       useCache,
       requestType: 'json',
       getResponse,
+      errorHandler,
     });
   },
 
@@ -131,6 +191,7 @@ export default {
       timeout = defaultTimeout,
       headers = {},
       getResponse = true,
+      errorHandler = defaultErrorHandler,
     } = {},
   ) {
     return extendRequest.post(url, {
@@ -140,6 +201,7 @@ export default {
       responseType: 'blob', // 表明返回服务器返回的数据类型
       timeout: timeout * 1000,
       headers,
+      errorHandler,
     });
   },
 
@@ -161,6 +223,7 @@ export default {
       timeout = defaultTimeout,
       headers = {},
       getResponse = false,
+      errorHandler = defaultErrorHandler,
     } = {},
   ) {
     return extendRequest.patch(url, {
@@ -170,6 +233,7 @@ export default {
       useCache,
       requestType: 'form',
       getResponse,
+      errorHandler,
     });
   },
 
@@ -190,6 +254,7 @@ export default {
       timeout = defaultTimeout,
       headers = {},
       getResponse = false,
+      errorHandler = defaultErrorHandler,
     } = {},
   ) {
     return extendRequest.patch(url, {
@@ -199,6 +264,7 @@ export default {
       useCache,
       requestType: 'json',
       getResponse,
+      errorHandler,
     });
   },
 
@@ -220,6 +286,7 @@ export default {
       timeout = defaultTimeout,
       headers = {},
       getResponse = false,
+      errorHandler = defaultErrorHandler,
     } = {},
   ) {
     return extendRequest.put(url, {
@@ -248,6 +315,7 @@ export default {
       timeout = defaultTimeout,
       headers = {},
       getResponse = false,
+      errorHandler = defaultErrorHandler,
     } = {},
   ) {
     return extendRequest.put(url, {
@@ -256,6 +324,7 @@ export default {
       useCache,
       timeout: timeout * 1000,
       headers,
+      errorHandler,
     });
   },
   /**
@@ -276,6 +345,7 @@ export default {
       timeout = defaultTimeout,
       headers = {},
       getResponse = false,
+      errorHandler = defaultErrorHandler,
     } = {},
   ) {
     return extendRequest.delete(url, {
@@ -284,6 +354,7 @@ export default {
       data,
       timeout: timeout * 1000,
       headers,
+      errorHandler,
     });
   },
   /**
@@ -304,14 +375,17 @@ export default {
       timeout = defaultTimeout,
       headers = {},
       getResponse = false,
+      errorHandler = defaultErrorHandler,
     } = {},
   ) {
+    console.log('useCache', useCache);
     return extendRequest.get(url, {
       useCache,
       params: data,
       getResponse,
       timeout: timeout * 1000,
       headers,
+      errorHandler,
     });
   },
   /**
@@ -327,7 +401,7 @@ export default {
   upload(
     url: string,
     formData: any,
-    { timeout = defaultTimeout, headers = {}, getResponse = false } = {},
+    { timeout = defaultTimeout, headers = {}, getResponse = false, errorHandler = defaultErrorHandler } = {},
   ) {
     return extendRequest(url, {
       method: 'post',
@@ -335,6 +409,7 @@ export default {
       data: formData,
       timeout: timeout * 1000,
       headers,
+      errorHandler,
     });
   },
 };
