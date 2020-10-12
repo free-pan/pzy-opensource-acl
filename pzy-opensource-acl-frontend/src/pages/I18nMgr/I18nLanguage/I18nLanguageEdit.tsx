@@ -4,7 +4,7 @@ import { useBoolean } from '@umijs/hooks';
 import { Modal, Form, Input, InputNumber } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-interface I18nLanguageAddProps {
+interface I18nLanguageEditProps {
   /** 点击确定回调 */
   onOk?: (e: object) => void;
   /** 点击模态框右上角叉、取消按钮、Props.maskClosable 值为 true 时的遮罩层或键盘按下 Esc 时的回调 */
@@ -16,12 +16,16 @@ interface I18nLanguageAddProps {
   /**
    * 确认按钮是否处于加载中状态
    */
-  confirmLoading: boolean
+  confirmLoading: boolean;
+  /**
+   * 初始数据
+   */
+  initData: null | any;
 }
 
 
-const I18nLanguageAdd: React.FC<I18nLanguageAddProps> = (props) => {
-  const { visible = false, onOk, onCancel, confirmLoading = false } = props;
+const I18nLanguageEdit: React.FC<I18nLanguageEditProps> = (props) => {
+  const { visible = false, onOk, onCancel, confirmLoading = false, initData } = props;
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -57,7 +61,7 @@ const I18nLanguageAdd: React.FC<I18nLanguageAddProps> = (props) => {
 
   return (
     <Modal
-      title={t('ui_comm_add')}
+      title={t('ui_comm_edit')}
       visible={visible}
       onOk={handleOk}
       onCancel={handleCancel}
@@ -65,7 +69,7 @@ const I18nLanguageAdd: React.FC<I18nLanguageAddProps> = (props) => {
     >
       <Form
         form={form}
-        initialValues={{ displayPriority: 1, name: 'dd', code: 'dd' }}
+        initialValues={initData}
       >
         <Form.Item
           label={t('ui_comm_name')}
@@ -94,4 +98,4 @@ const I18nLanguageAdd: React.FC<I18nLanguageAddProps> = (props) => {
     </Modal>
   );
 };
-export default memo(I18nLanguageAdd);
+export default memo(I18nLanguageEdit);

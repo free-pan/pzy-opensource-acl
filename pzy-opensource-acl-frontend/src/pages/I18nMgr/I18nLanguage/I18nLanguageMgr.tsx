@@ -16,6 +16,7 @@ import AntdV4DynamicIcon from '@/components/AntdV4DynamicIcon';
 import I18nLanguageAdd from './I18nLanguageAdd';
 import { useRequestDefaultConfig } from '@/utils/CommConfig';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
+import I18nLanguageEdit from '@/pages/I18nMgr/I18nLanguage/I18nLanguageEdit';
 
 interface RouteProps {
   /**
@@ -33,6 +34,7 @@ interface i18nLanguageMgrProps {
 }
 
 const i18nLanguageMgr: React.FC<i18nLanguageMgrProps> = (props) => {
+    const [editData, setEditData] = useState<any>();
     const { loading, run, data = { resp: { list: [] } } } = useRequest<any>(
       I18nMgrService.searchLanguage,
       {
@@ -47,8 +49,33 @@ const i18nLanguageMgr: React.FC<i18nLanguageMgrProps> = (props) => {
         ...useRequestDefaultConfig.addEditDelConfig,
         onSuccess(data, param) {
           console.log('success data', data, 'success param', param);
-          toggle();
+          toggleAddModalVisible();
           run({ kw: '' });
+        },
+      },
+    );
+    const {
+      loading: editLoading, run: editRun, data: editResp,
+    } = useRequest<any>(
+      I18nMgrService.editLanguage,
+      {
+        ...useRequestDefaultConfig.addEditDelConfig,
+        onSuccess(data, param) {
+          toggleAddModalVisible();
+          run({ kw: '' });
+        },
+      },
+    );
+    const {
+      loading: searchByIdLoading, run: searchByIdRun, data: detailResp,
+    } = useRequest<any>(
+      I18nMgrService.searchLanguageById,
+      {
+        ...useRequestDefaultConfig.addEditDelConfig,
+        onSuccess(data, param) {
+          console.log('success data', data, 'success param', param);
+          setEditData(data.resp);
+          toggleEditModalVisible();
         },
       },
     );
@@ -84,18 +111,11 @@ const i18nLanguageMgr: React.FC<i18nLanguageMgrProps> = (props) => {
       AntdUtil.antdColumnSortByColumnInfo(antdColumnMap, columnList),
     );
     const [tableSize, setTableSize] = useState<SizeType>(undefined);
-    const { state, toggle } = useToggle(false);
-    const dispatch = useDispatch();
-
-    // @ts-ignore
-    const loadingEffect = useSelector((state) => state.loading);
-    //const loading = loadingEffect.effects['user/fetchUser'];
-    // @ts-ignore
-    //const user = useSelector(state=>state.user.userInfo)
+    const { state: addModalVisible, toggle: toggleAddModalVisible } = useToggle(false);
+    const { state: editModalVisible, toggle: toggleEditModalVisible } = useToggle(false);
 
     // 仅在组件第一次初始化时调用
-    useEffect
-    (() => {
+    useEffect(() => {
       run({ kw: '' });
     }, []);
 
@@ -117,7 +137,13 @@ const i18nLanguageMgr: React.FC<i18nLanguageMgrProps> = (props) => {
       addRun(values);
     };
     const handleAddCancel = () => {
-      toggle();
+      toggleAddModalVisible();
+    };
+    const handleEditOk = (values: object) => {
+      editRun(values);
+    };
+    const handleEditCancel = () => {
+      toggleEditModalVisible();
     };
     return (
       <PageContainer title={<PageTitle/>} breadcrumb={{}}>
@@ -164,8 +190,7 @@ const i18nLanguageMgr: React.FC<i18nLanguageMgrProps> = (props) => {
               <SearchCardExtra
                 columnList={columnList}
                 onNew={() => {
-                  console.log('new');
-                  toggle();
+                  toggleAddModalVisible();
                 }}
                 onViewColumnChange={(columnNameList) => {
                   setRealAntdColumnArr(
@@ -194,8 +219,10 @@ const i18nLanguageMgr: React.FC<i18nLanguageMgrProps> = (props) => {
               loading={loading}
             />
           </Card>
-          <I18nLanguageAdd confirmLoading={addLoading} visible={state} onOk={handleAddOk}
-                           onCancel={handleAddCancel}></I18nLanguageAdd>
+          <I18nLanguageAdd confirmLoading={addLoading} visible={addModalVisible} onOk={handleAddOk}
+                           onCancel={handleAddCancel}/>
+          <I18nLanguageEdit confirmLoading={editLoading} visible={editModalVisible} onOk={handleEditOk}
+                            onCancel={handleEditCancel} initData={editData}/>
         </div>
       </PageContainer>
     );
