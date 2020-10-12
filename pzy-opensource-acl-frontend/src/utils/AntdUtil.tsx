@@ -67,7 +67,7 @@ export default {
    * @param antdColumnMap antd 表格的列定义, key为key,value为列定义
    * @param columnNameList 表格的列顺序
    */
-  antdColumnSortByColumnName(antdColumnMap: any, columnNameList: Array<string>): Array<any> {
+  antdColumnSortByColumnName(antdColumnMap: any, columnNameList: Array<any>): Array<any> {
     const antdColumnArr: Array<any> = [];
     columnNameList.map((item) => {
       antdColumnArr.push(antdColumnMap[item]);

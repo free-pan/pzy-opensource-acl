@@ -9,6 +9,7 @@ import {
   SettingOutlined,
 } from '@ant-design/icons';
 import { CheckboxOptionType, CheckboxValueType } from 'antd/lib/checkbox/Group';
+import { SizeType } from 'antd/es/config-provider/SizeContext';
 
 const CheckboxGroup = Checkbox.Group;
 
@@ -67,7 +68,7 @@ interface SearchCardExtraProps {
   /**
    * 密度改变回调
    */
-  onDensity: (density: string) => void;
+  onDensity: (density: SizeType) => void;
   /**
    * 重新加载回调
    */
@@ -79,11 +80,11 @@ interface SearchCardExtraProps {
   /**
    * 取消全屏按钮点击的回调
    */
-  onCancelFullScreen: Function;
+  onCancelFullScreen?: Function;
   /**
    * 显示的列
    */
-  columnList: Array<ViewColumnInfo>;
+  columnList: Array<ViewColumnInfo | any>;
   /**
    * 选中所有列或取消所有列时触发
    */
@@ -175,7 +176,7 @@ const SearchCardExtra: React.FC<SearchCardExtraProps> = (props) => {
   );
   const menu = (
     <Menu>
-      <Menu.Item key="0" onClick={() => onDensity('default')}>
+      <Menu.Item key="0" onClick={() => onDensity(undefined)}>
         <a>默认</a>
       </Menu.Item>
       <Menu.Item key="1" onClick={() => onDensity('middle')}>

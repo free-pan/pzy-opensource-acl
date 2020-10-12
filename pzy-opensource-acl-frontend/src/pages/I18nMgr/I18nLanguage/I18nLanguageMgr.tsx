@@ -15,6 +15,7 @@ import { useSessionStorageState } from '@umijs/hooks';
 import AntdV4DynamicIcon from '@/components/AntdV4DynamicIcon';
 import I18nLanguageAdd from './I18nLanguageAdd';
 import { useRequestDefaultConfig } from '@/utils/CommConfig';
+import { SizeType } from 'antd/es/config-provider/SizeContext';
 
 interface RouteProps {
   /**
@@ -32,7 +33,7 @@ interface i18nLanguageMgrProps {
 }
 
 const i18nLanguageMgr: React.FC<i18nLanguageMgrProps> = (props) => {
-    const { loading, run, data = { resp: { list: [] } } } = useRequest(
+    const { loading, run, data = { resp: { list: [] } } } = useRequest<any>(
       I18nMgrService.searchLanguage,
       {
         ...useRequestDefaultConfig.searchListConfig,
@@ -82,7 +83,7 @@ const i18nLanguageMgr: React.FC<i18nLanguageMgrProps> = (props) => {
     const [realAntdColumnArr, setRealAntdColumnArr] = useState<Array<object>>(
       AntdUtil.antdColumnSortByColumnInfo(antdColumnMap, columnList),
     );
-    const [tableSize, setTableSize] = useState<string>('default');
+    const [tableSize, setTableSize] = useState<SizeType>(undefined);
     const { state, toggle } = useToggle(false);
     const dispatch = useDispatch();
 
