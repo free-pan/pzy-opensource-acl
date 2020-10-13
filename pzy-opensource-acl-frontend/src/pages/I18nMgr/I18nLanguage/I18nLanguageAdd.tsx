@@ -1,6 +1,5 @@
 import React, { memo, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'dva';
-import { useBoolean } from '@umijs/hooks';
 import { Modal, Form, Input, InputNumber } from 'antd';
 import { useTranslation } from 'react-i18next';
 
@@ -27,10 +26,8 @@ const I18nLanguageAdd: React.FC<I18nLanguageAddProps> = (props) => {
 
   const dispatch = useDispatch();
 
-  // @ts-ignore
-  const loadingEffect = useSelector(state => state.loading);
+  const loadingEffect = useSelector<any>(state => state.loading);
   //const loading = loadingEffect.effects['user/fetchUser'];
-  // @ts-ignore
   //const user = useSelector(state=>state.user.userInfo)
 
   // 仅在组件第一次初始化时调用
