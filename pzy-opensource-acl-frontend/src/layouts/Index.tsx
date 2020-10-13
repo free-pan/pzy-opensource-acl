@@ -24,16 +24,13 @@ const Index: React.FC<IndexProps> = (props) => {
     searchMenuList: 'GlobalModel/searchMenuList',
     setSelectedMenuAndBreadcrumb: 'GlobalModel/setSelectedMenuAndBreadcrumb',
   };
-  // @ts-ignore
-  const loadingEffect = useSelector((state) => state.loading);
+  const loadingEffect = useSelector<any, any>((state) => state.loading);
   // 获取菜单数据加载状态
   const menuLoading = loadingEffect.effects[effectMethods.searchMenuList];
   // 获取菜单数据
-  // @ts-ignore
-  const menuList = useSelector((state) => state.GlobalModel.menuList);
+  const menuList = useSelector<any, MenuDataItem[]>((state) => state.GlobalModel.menuList);
 
-  // @ts-ignore
-  let languageCode = useSelector(
+  let languageCode = useSelector<any, string>(
     (state) => state.GlobalModel.selectedLanguageCode,
   );
   languageCode = languageCode ? languageCode : getLanguageCode();
@@ -50,7 +47,7 @@ const Index: React.FC<IndexProps> = (props) => {
     menus.map(({ i18n, icon, children, name, ...item }) => ({
       ...item,
       name: t(i18n),
-      icon: icon && <Icon type={icon as string} />,
+      icon: icon && <Icon type={icon as string}/>,
       children: children && loopMenuItem(children),
     }));
 
@@ -65,10 +62,10 @@ const Index: React.FC<IndexProps> = (props) => {
       }}
     >
       <div className={'middleBizMenuBreadcrumb'}>
-        <BizMenuBreadcrumb pathname={history.location.pathname} />
+        <BizMenuBreadcrumb pathname={history.location.pathname}/>
       </div>
       <div style={{ float: 'right' }}>
-        <BizTopRightContentMenu />
+        <BizTopRightContentMenu/>
       </div>
     </div>
   );
@@ -110,7 +107,7 @@ const Index: React.FC<IndexProps> = (props) => {
            * @param key
            * @param keyPath
            */
-          onClick: function ({ key, keyPath, item, domEvent }) {
+          onClick: function({ key, keyPath, item, domEvent }) {
             dispatch({
               type: effectMethods.setSelectedMenuAndBreadcrumb,
               payload: { selectedMenuItemPath: key },
