@@ -8,15 +8,14 @@ import { Card, Row, Col, Button, Input, Form, Table } from 'antd';
 import { useTranslation } from 'react-i18next';
 import SearchCardExtra from '@/components/SearchCardExtra';
 import { exitFullScreen, fullScreen } from '@/utils/FullScreenUtil';
-import { useRequest, useToggle } from '@umijs/hooks';
 import I18nMgrService from '@/pages/I18nMgr/I18nMgrService';
 import AntdUtil from '@/utils/AntdUtil';
-import { useSessionStorageState } from '@umijs/hooks';
 import AntdV4DynamicIcon from '@/components/AntdV4DynamicIcon';
 import I18nLanguageAdd from './I18nLanguageAdd';
 import { useRequestDefaultConfig } from '@/utils/CommConfig';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import I18nLanguageEdit from '@/pages/I18nMgr/I18nLanguage/I18nLanguageEdit';
+import { useRequest, useSessionStorageState, useToggle } from 'ahooks';
 
 interface RouteProps {
   /**
@@ -111,8 +110,8 @@ const i18nLanguageMgr: React.FC<i18nLanguageMgrProps> = (props) => {
       AntdUtil.antdColumnSortByColumnInfo(antdColumnMap, columnList),
     );
     const [tableSize, setTableSize] = useState<SizeType>(undefined);
-    const { state: addModalVisible, toggle: toggleAddModalVisible } = useToggle(false);
-    const { state: editModalVisible, toggle: toggleEditModalVisible } = useToggle(false);
+    const [addModalVisible, { toggle: toggleAddModalVisible }] = useToggle(false);
+    const [editModalVisible, { toggle: toggleEditModalVisible }] = useToggle(false);
 
     // 仅在组件第一次初始化时调用
     useEffect(() => {
